@@ -1,13 +1,14 @@
 name: Deploy to Ubuntu Server
 
 on:
-  workflow_dispatch:   # Chạy thủ công
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["CI - Build and Push Docker Image"]
+    types:
+      - completed
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
     steps:
       - name: Checkout code
@@ -23,3 +24,16 @@ jobs:
         run: |
           IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/department-service
           docker pull $IMAGE_NAME:latest
+
+      - name: Stop and remove old container
+        run: |
+          docker stop department-service || true
+          docker rm department-service || true
+
+      - name: Run new container
+        run: |
+          IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/department-service
+          docker run -d \
+            --name department-service \
+            -p 8083:8083 \
+            $IMAGE_NAME:latest
