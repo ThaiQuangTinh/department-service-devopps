@@ -12,6 +12,7 @@ import java.util.List;
 @RequestMapping("/api/v1/departments")
 public class DepartmentController {
 
+    // Inject service.
     private final DepartmentService departmentService;
 
     public DepartmentController(DepartmentService departmentService) {
