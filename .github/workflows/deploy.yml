@@ -30,10 +30,4 @@ jobs:
           docker stop department-service || true
           docker rm department-service || true
 
-      - name: Run new container
-        run: |
-          IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/department-service
-          docker run -d \
-            --name department-service \
-            -p 8083:8083 \
-            $IMAGE_NAME:latest
+
